@@ -1,0 +1,28 @@
+FROM ubuntu:latest
+
+# Set working directory
+WORKDIR /backendapp
+
+# Copy backend files
+COPY backend /backendapp/
+
+# Install dependencies
+RUN apt-get update -y && \
+    apt-get install -y curl build-essential ca-certificates git unzip python3 make gcc g++ && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
+
+# Install Node.js packages
+RUN npm install -g corepack && \
+    corepack enable && \
+    corepack prepare yarn@stable --activate && \
+    npm install -g pm2
+
+# Install backend dependencies
+RUN npm install && npm install dotenv 
+
+# Expose API port
+EXPOSE 313
+
+# Start backend server
+CMD ["node", "index.js"]
